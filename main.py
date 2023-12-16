@@ -51,12 +51,21 @@ class SVDWorker:
     def result(self, value):
         self._result = value
 
+    def get_matrix_size(self):
+        return self.image_matrix.shape
+
     def convert_image_to_grey(self):
         self.converted_grey = Image.open(self.image_path).convert('L')
 
     def create_image_matrix(self):
         if self.converted_grey:
             self.image_matrix = np.array(self.converted_grey)
+
+    def get_compression(self, k):
+        m, n = self.image_matrix.shape
+        value_compr = k * (m + n + 1)
+        value_source = m * n
+        return value_compr / value_source * 100
 
     def calculate_results(self):
         local_result = []
@@ -75,12 +84,20 @@ class SVDWorker:
             plt.axis('off')
             plt.show()
 
+    def draw_grey_source_figure(self):
+        plt.figure(figsize=(10, 6))
+        plt.imshow(self.image_matrix, cmap='gray')
+        plt.title(f'Серая собачка')
+        plt.axis('off')
+        plt.show()
+
     def run(self):
         self.convert_image_to_grey()
         self.create_image_matrix()
+        self.draw_grey_source_figure()
         self.calculate_results()
         self.draw_figures()
-        
+
 
 if __name__ == '__main__':
     svd_worker = SVDWorker("dog_img.jpg")
